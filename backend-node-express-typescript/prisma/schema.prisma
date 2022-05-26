@@ -1,0 +1,73 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Video {
+  id            String       @id @default(uuid())
+  title         String       @db.VarChar(255)
+  description   String       @db.VarChar(255)
+  video_url     String?      @db.VarChar(255)
+  tumb_url      String?      @db.VarChar(255)
+  original_url  String?      @db.VarChar(255)
+  converted_url String?      @db.VarChar(255)
+  priority      Int
+  in_spotlight  Boolean      @default(false)
+  in_live       Boolean      @default(false)
+  inactive      Boolean      @default(false)
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @default(now())
+  in_pending    Boolean      @default(false)
+  uploadQueue   UploadQueue?
+}
+
+model Credential {
+  id       String @id @default(uuid())
+  email    String @db.VarChar(255)
+  login    String @db.VarChar(255)
+  password String @db.VarChar(255)
+}
+
+model UploadQueue {
+  id                 String   @id @default(uuid())
+  status_upload      Status   @default(PENDING)
+  status_convert     Status   @default(PENDING)
+  video_id           String   @unique
+  created_at         DateTime @default(now())
+  updated_at         DateTime @default(now())
+  converted_filename String?  @db.VarChar(255)
+  filename           String   @db.VarChar(255)
+  video              Video    @relation(fields: [video_id], references: [id])
+}
+
+model VideoAds {
+  id             String           @id @default(uuid())
+  title          String           @db.VarChar(255)
+  description    String           @db.VarChar(255)
+  video_url      String?          @db.VarChar(255)
+  inactive       Boolean          @default(false)
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @default(now())
+  in_pending     Boolean          @default(false)
+  ads_url        String?          @db.VarChar(255)
+  VideoAdsReport VideoAdsReport[]
+}
+
+model VideoAdsReport {
+  id           String   @id @default(uuid())
+  video_id     String
+  request_data String
+  VideoAds     VideoAds @relation(fields: [video_id], references: [id])
+}
+
+enum Status {
+  PENDING
+  PROGRESS
+  ERROR
+  DONE
+}
