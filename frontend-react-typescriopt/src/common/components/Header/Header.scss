@@ -1,0 +1,13 @@
+.header-box {
+  height: 52px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.2);
+}
+
+.header-right-box {
+  margin-right: 20px;
+}
